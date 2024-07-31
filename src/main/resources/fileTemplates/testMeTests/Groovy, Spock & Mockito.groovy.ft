@@ -1,0 +1,45 @@
+#parse("TestMe macros.groovy")
+#set($hasMocks=$MockitoMockBuilder.hasMocks($TESTED_CLASS))
+#if($PACKAGE_NAME)
+package ${PACKAGE_NAME}
+#end
+import spock.lang.*
+#if($hasMocks)
+import org.mockito.InjectMocks
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+//import static org.mockito.Mockito.*
+#end
+
+#parse("File Header.java")
+class ${CLASS_NAME}  extends Specification {
+#grRenderMockedFields($hasMocks, $TESTED_CLASS)
+#grRenderTestSubjectInit($TESTED_CLASS,$TestSubjectUtils.hasTestableInstanceMethod($TESTED_CLASS.methods),$hasMocks)
+#if($hasMocks)
+
+    def setup() {
+        MockitoAnnotations.${MockitoMockBuilder.initMocksMethod}(this)
+    }
+#end
+#foreach($method in $TESTED_CLASS.methods)
+#if($TestSubjectUtils.shouldBeTested($method))
+
+    def "test #renderTestMethodNameAsWords($method.name)"() {
+#if($hasMocks && $MockitoMockBuilder.shouldStub($method,$TESTED_CLASS))
+        given:
+#grRenderMockStubs($method,$TESTED_CLASS)
+
+#end
+        when:
+        #grRenderMethodCall($method,$TESTED_CLASS.name)
+
+
+        then:
+#if($method.hasReturn())        #grRenderAssert($method)#{else}false//todo - validate something
+#end
+    }
+#end
+#end
+}
+
+#parse("TestMe Footer.java")
