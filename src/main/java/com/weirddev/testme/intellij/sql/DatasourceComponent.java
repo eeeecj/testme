@@ -45,7 +45,7 @@ public class DatasourceComponent {
 
     private DruidDataSource createDatasource() throws Exception {
 
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
         Properties properties = new Properties();
 

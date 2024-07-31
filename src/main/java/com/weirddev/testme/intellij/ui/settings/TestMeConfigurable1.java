@@ -15,16 +15,13 @@ import javax.swing.*;
  *
  * @author Yaron Yamin
  */
-public class TestMeConfigurable implements SearchableConfigurable {
+public class TestMeConfigurable1 implements SearchableConfigurable {
 
-    private final TestMeConfigPersistent testMeConfigPersistent;
-    private TestMeSettingsForm testMeSettingsForm;
 
     private TestMeDatasourceSettingForm testMeDatasourceSettingForm;
     private DatasourceConfigComponent datasourceConfigComponent;
 
-    public TestMeConfigurable() {
-        testMeConfigPersistent = TestMeConfigPersistent.getInstance();
+    public TestMeConfigurable1() {
         datasourceConfigComponent = DatasourceConfigComponent.getInstance();
     }
 
@@ -37,7 +34,7 @@ public class TestMeConfigurable implements SearchableConfigurable {
     @Nls
     @Override
     public String getDisplayName() {
-        return "TestMe";
+        return "Datasource";
     }
 
     @Nullable
@@ -49,7 +46,6 @@ public class TestMeConfigurable implements SearchableConfigurable {
     @Nullable
     @Override
     public JComponent createComponent() {
-        testMeSettingsForm = new TestMeSettingsForm();
         testMeDatasourceSettingForm=new TestMeDatasourceSettingForm();
 //        return testMeSettingsForm.getRootPanel();
         return testMeDatasourceSettingForm.getContentPane();
@@ -57,23 +53,21 @@ public class TestMeConfigurable implements SearchableConfigurable {
 
     @Override
     public boolean isModified() {
-        return testMeSettingsForm.isDirty(testMeConfigPersistent.getState());
+        return false;
     }
 
     @Override
     public void apply() {
-        testMeSettingsForm.persistState(testMeConfigPersistent.getState());
+
     }
 
     @Override
     public void reset() {
-        testMeSettingsForm.reset(testMeConfigPersistent.getState());
+
     }
 
     @Override
     public void disposeUIResources() {
-        testMeSettingsForm.dispose();
-        testMeSettingsForm = null;
         testMeDatasourceSettingForm.dispose();
     }
 }

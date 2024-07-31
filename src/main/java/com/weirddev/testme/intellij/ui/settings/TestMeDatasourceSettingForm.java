@@ -106,7 +106,7 @@ public class TestMeDatasourceSettingForm implements Disposable {
     }
 
     private void deleteDatasource() {
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
         String removedName = component.getName();
         component.remove();
         nameComboBox.removeItem(removedName);
@@ -118,7 +118,7 @@ public class TestMeDatasourceSettingForm implements Disposable {
 
     private void initDatasource() {
 
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
         host.setText(component.getHost());
         port.setText(component.getPort());
@@ -143,7 +143,7 @@ public class TestMeDatasourceSettingForm implements Disposable {
     }
 
     private void datasourceChange() {
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
         String current = (String) nameComboBox.getSelectedItem();
 
@@ -169,7 +169,7 @@ public class TestMeDatasourceSettingForm implements Disposable {
 
     private void updateDatasourceForPersistent() {
 
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
         DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
 
@@ -239,7 +239,7 @@ public class TestMeDatasourceSettingForm implements Disposable {
 
     private void displayNameComboBox() {
 
-        DatasourceConfigComponent component = ApplicationManager.getApplication().getComponent(DatasourceConfigComponent.class);
+        DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
         List<String> datasourceNames = component.getAllDatasourceNames();
         nameComboBox.removeAllItems();
