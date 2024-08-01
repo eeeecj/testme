@@ -1,10 +1,10 @@
 <idea-plugin>
-  <id>com.weirddev.testme</id>
-  <name>TestMe</name>
-  <version>6.6.0</version>
-  <vendor email="testme@weirddev.com" url="https://weirddev.com">WeirdDev</vendor>
+    <id>com.weirddev.testme</id>
+    <name>TestMe</name>
+    <version>6.6.0</version>
+    <vendor email="testme@weirddev.com" url="https://weirddev.com">WeirdDev</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
    <p>Auto Generate Unit Tests in Java, Groovy or Scala.</p>
    <p>No more boilerplate!</p>
    <h3>Features:</h3>
@@ -17,56 +17,83 @@
    </ul>
    <p>Issues and feature requests are welcomed at <a href="https://weirddev.com/forum#!/testme">TestMe project forum</a></p>
     ]]></description>
-  <change-notes><![CDATA[
+    <change-notes><![CDATA[
         <ul>
           <li>Generate Test Methods selection popup - Added a checkout to include/exclude inherited methods (contributed by <a href="https://github.com/zhangfj88">zhangfj88</a> - <a href="https://github.com/wrdv/testme-idea/pull/44">PR #44</a>)</li>
           <li>bugfix: Lombok generated @superbuilder results in NPE (contributed by <a href="https://github.com/huangliang992">HuangLiang</a> - <a href="https://github.com/wrdv/testme-idea/pull/45">PR #45</a>, raised in <a href="https://github.com/wrdv/testme-idea/pull/43">Issue #43</a>, raised by <a href="https://github.com/winint1988">winint1988</a>)</li>
         </ul>
         <a href="https://weirddev.com/testme/release-notes">Complete Release Notes listing</a>
     ]]>
-  </change-notes>
-  <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="232" until-build="241.*"/>
-  <depends>com.intellij.modules.java</depends>
-  <depends>JUnit</depends>
-  <depends optional="true" config-file="plugin-groovy.xml">org.intellij.groovy</depends>
-  <depends optional="true" config-file="plugin-scala.xml">org.intellij.scala</depends>
-  <extensions defaultExtensionNs="com.intellij">
-    <applicationConfigurable parentId="root" displayName="TestMe" id="preferences.TestMe" instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable"/>
-    <applicationConfigurable parentId="preferences.TestMe" displayName="Datasource" id="preferences.TestMe.datasource" instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable1"/>
+    </change-notes>
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="232" until-build="241.*"/>
+    <depends>com.intellij.modules.java</depends>
+    <depends>JUnit</depends>
+    <depends optional="true" config-file="plugin-groovy.xml">org.intellij.groovy</depends>
+    <depends optional="true" config-file="plugin-scala.xml">org.intellij.scala</depends>
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationConfigurable parentId="root" displayName="TestMe" id="preferences.TestMe"
+                                 instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable"/>
+        <applicationConfigurable parentId="preferences.TestMe" displayName="Datasource"
+                                 id="preferences.TestMe.datasource"
+                                 instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable1"/>
 
-    <projectConfigurable  id="preferences.TestMe.templates"  parentId="preferences.TestMe"  displayName="TestMe Templates" provider="com.weirddev.testme.intellij.ui.template.TestTemplatesConfigurable$Provider"/>
-    <applicationService serviceImplementation="com.weirddev.testme.intellij.configuration.TestMeConfigPersistent"/>
-    <applicationService serviceImplementation="com.weirddev.testme.intellij.configuration.DatasourceConfigComponent"/>
-    <applicationService serviceImplementation="com.weirddev.testme.intellij.sql.DatasourceComponent"/>
-    <applicationService serviceImplementation="com.weirddev.testme.intellij.ui.template.ExportableFileTemplateSettings" serviceInterface="com.weirddev.testme.intellij.ui.template.FileTemplateSettings"/>
-    <webHelpProvider implementation="com.weirddev.testme.intellij.configuration.TestMeWebHelpProvider" id="com.weirddev.testme"/>
-    <projectService serviceImplementation="com.weirddev.testme.intellij.ui.template.TestMeTemplateManager"/>
-    <applicationService serviceImplementation="com.weirddev.testme.intellij.ui.template.TestMeTemplateManager"/>
-    <postStartupActivity implementation="com.weirddev.testme.intellij.TestMePluginRegistration"/>
-    <intentionAction>
-      <language>UAST</language>
-      <className>com.weirddev.testme.intellij.intention.CreateTestForMethodIntention</className>
-      <category>TestMe intentions</category>
-    </intentionAction>
-  </extensions>
+        <projectConfigurable id="preferences.TestMe.templates" parentId="preferences.TestMe"
+                             displayName="TestMe Templates"
+                             provider="com.weirddev.testme.intellij.ui.template.TestTemplatesConfigurable$Provider"/>
+        <applicationService serviceImplementation="com.weirddev.testme.intellij.configuration.TestMeConfigPersistent"/>
+        <applicationService
+                serviceImplementation="com.weirddev.testme.intellij.configuration.DatasourceConfigComponent"/>
+        <applicationService serviceImplementation="com.weirddev.testme.intellij.sql.DatasourceComponent"/>
+        <applicationService
+                serviceImplementation="com.weirddev.testme.intellij.ui.template.ExportableFileTemplateSettings"
+                serviceInterface="com.weirddev.testme.intellij.ui.template.FileTemplateSettings"/>
+        <webHelpProvider implementation="com.weirddev.testme.intellij.configuration.TestMeWebHelpProvider"
+                         id="com.weirddev.testme"/>
+        <projectService serviceImplementation="com.weirddev.testme.intellij.ui.template.TestMeTemplateManager"/>
+        <applicationService serviceImplementation="com.weirddev.testme.intellij.ui.template.TestMeTemplateManager"/>
+        <postStartupActivity implementation="com.weirddev.testme.intellij.TestMePluginRegistration"/>
+        <intentionAction>
+            <language>UAST</language>
+            <className>com.weirddev.testme.intellij.intention.CreateTestForMethodIntention</className>
+            <category>TestMe intentions</category>
+        </intentionAction>
+    </extensions>
 
-  <actions>
-    <action id="GotoTest" class="com.weirddev.testme.intellij.action.GotoTestOrCodeActionExt"  overrides="true">
-      <keyboard-shortcut first-keystroke="control shift T" keymap="$default"/>
-    </action>
-    <action id="testme.action.generators" class="com.weirddev.testme.intellij.action.TestMeAction"
-            text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png" >
-      <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default" />
-      <add-to-group group-id="GenerateGroup" anchor="last" />
-      <add-to-group group-id="CodeMenu" anchor="first"/>
-    </action>
-    <!--<group id="testme.group.generators"-->
-           <!--class="com.weirddev.testme.intellij.action.TestGeneratorsGroupAction"-->
-           <!--popup="true"-->
-           <!--text="TestMe"-->
-           <!--icon="/icons/TestMe.png" description="TestMe test generators">-->
-      <!--<add-to-group group-id="GenerateGroup" relative-to-action="GenerateCopyright" anchor="after" />-->
-    <!--</group>-->
-  </actions>
+    <actions>
+        <action id="GotoTest" class="com.weirddev.testme.intellij.action.GotoTestOrCodeActionExt" overrides="true">
+            <keyboard-shortcut first-keystroke="control shift T" keymap="$default"/>
+        </action>
+        <group id="testme.group.generators" text="&amp;TestMe" popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <add-to-group group-id="CodeMenu" anchor="first"/>
+            <action id="testme.action.generators" class="com.weirddev.testme.intellij.action.TestMeAction"
+                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
+                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
+            </action>
+            <action id="testme.action.generators2" class="com.weirddev.testme.intellij.action.TestMeAction"
+                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
+                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
+            </action>
+        </group>
+        <group id="testme.group.generators" text="&amp;TestMe" popup="true">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+            <add-to-group group-id="CodeMenu" anchor="first"/>
+            <action id="testme.action.generators" class="com.weirddev.testme.intellij.action.TestMeAction"
+                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
+                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
+            </action>
+            <action id="testme.action.generators2" class="com.weirddev.testme.intellij.action.TestMeAction"
+                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
+                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
+            </action>
+        </group>
+        <!--<group id="testme.group.generators"-->
+        <!--class="com.weirddev.testme.intellij.action.TestGeneratorsGroupAction"-->
+        <!--popup="true"-->
+        <!--text="TestMe"-->
+        <!--icon="/icons/TestMe.png" description="TestMe test generators">-->
+        <!--<add-to-group group-id="GenerateGroup" relative-to-action="GenerateCopyright" anchor="after" />-->
+        <!--</group>-->
+    </actions>
 </idea-plugin>
