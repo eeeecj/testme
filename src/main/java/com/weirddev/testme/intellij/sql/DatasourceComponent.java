@@ -6,18 +6,40 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.weirddev.testme.intellij.configuration.DatasourceConfigComponent;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class DatasourceComponent {
     public static final String DATABASE_URL_TEMPLATE = "jdbc:mysql://%s:%s/%s";
 
     private DruidDataSource dataSource;
+
     public Connection getConnection() throws Exception {
         if (dataSource == null || dataSource.isClosed()) {
             dataSource = createDatasource();
         }
 
         return dataSource.getConnection(3000);
+    }
+
+    public List<String> getAllTableName(String database) throws Exception {
+        Connection conn = this.getConnection();
+        try {
+            DatabaseMetaData metaData = conn.getMetaData();
+            ResultSet rs = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+            List<String> ls = new ArrayList<>();
+            while (rs.next()) {
+                String s = rs.getString("TABLE_NAME");
+                ls.add(s);
+            }
+            return ls;
+        } finally {
+            closeConnection(conn);
+        }
     }
 
     public void updateDatasource() {
@@ -27,6 +49,15 @@ public class DatasourceComponent {
         } catch (Exception ignored) {
             if (dataSource != null) {
                 dataSource.close();
+            }
+        }
+    }
+
+    private void closeConnection(Connection conn) {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException ignored) {
             }
         }
     }

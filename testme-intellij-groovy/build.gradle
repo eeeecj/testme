@@ -16,7 +16,7 @@ intellij {
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
     plugins = enabledPlugins
-    localPath = '/home/eeeecj/workspace/code/java/idea/'
+    localPath = '/home/eeeecj/workspace/java/idea-ic/'
 }
 
 

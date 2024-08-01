@@ -76,18 +76,6 @@
                 <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
             </action>
         </group>
-        <group id="testme.group.generators" text="&amp;TestMe" popup="true">
-            <add-to-group group-id="GenerateGroup" anchor="last"/>
-            <add-to-group group-id="CodeMenu" anchor="first"/>
-            <action id="testme.action.generators" class="com.weirddev.testme.intellij.action.TestMeAction"
-                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
-                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
-            </action>
-            <action id="testme.action.generators2" class="com.weirddev.testme.intellij.action.TestMeAction"
-                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
-                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
-            </action>
-        </group>
         <!--<group id="testme.group.generators"-->
         <!--class="com.weirddev.testme.intellij.action.TestGeneratorsGroupAction"-->
         <!--popup="true"-->
