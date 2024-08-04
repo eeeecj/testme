@@ -4,6 +4,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.weirddev.testme.intellij.TestMePluginRegistration;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,10 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SqlExecutor {
     private static final Logger LOG = Logger.getInstance(TestMePluginRegistration.class.getName());
@@ -32,7 +31,7 @@ public class SqlExecutor {
         }
     }
 
-    public List<Map<String, Object>> executeSqlWithResult(String sql) {
+    public static List<Map<String, Object>> executeSqlWithResult(String sql) throws Exception {
         DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
         List<Map<String, Object>> result = new ArrayList<>();
         try (Connection connection = datasourceComponent.getConnection()) {
@@ -46,9 +45,31 @@ public class SqlExecutor {
                 }
                 result.add(map);
             }
-        } catch (Exception e) {
-            LOG.warn("can't check for keyboard conflicts", e);
         }
         return result;
+    }
+
+    public static String getCreateTableSql(String tableName) throws Exception {
+        String sql = "SHOW CREATE TABLE " + tableName;
+        List<Map<String, Object>> result = SqlExecutor.executeSqlWithResult(sql);
+        if (CollectionUtils.isEmpty(result)) {
+            return "";
+        }
+        Map<String, Object> map = result.get(0);
+        return map.get("CREATE_TABLE").toString();
+    }
+
+    public static List<String> getColumns(String tableName) throws Exception {
+        String sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION";
+        List<Map<String, Object>> result = SqlExecutor.executeSqlWithResult(sql);
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        }
+        return result.stream().map(p -> (String) p.get("COLUMN_NAME")).collect(Collectors.toList());
+    }
+
+    public static List<Map<String, Object>> getData(String tableName, String size) throws Exception {
+        String sql = "SELECT * FROM " + tableName + " limit " + size ;
+        return SqlExecutor.executeSqlWithResult(sql);
     }
 }

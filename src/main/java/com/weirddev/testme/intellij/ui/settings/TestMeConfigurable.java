@@ -51,8 +51,7 @@ public class TestMeConfigurable implements SearchableConfigurable {
     public JComponent createComponent() {
         testMeSettingsForm = new TestMeSettingsForm();
         testMeDatasourceSettingForm=new TestMeDatasourceSettingForm();
-//        return testMeSettingsForm.getRootPanel();
-        return testMeDatasourceSettingForm.getContentPane();
+        return testMeSettingsForm.getRootPanel();
     }
 
     @Override

@@ -182,8 +182,10 @@
                 <constraints/>
                 <properties>
                   <editable value="false"/>
+                  <enabled value="true"/>
                   <lineWrap value="true"/>
                   <rows value="6"/>
+                  <wrapStyleWord value="false"/>
                 </properties>
               </component>
             </children>
