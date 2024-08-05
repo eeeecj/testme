@@ -353,8 +353,4 @@ public class TestMeTableStructure implements Configurable, Disposable {
         Disposer.dispose(this);
     }
 
-    public void setTableStyle(){
-        table1.setRowHeight(30);
-        table1.auto
-    }
 }
