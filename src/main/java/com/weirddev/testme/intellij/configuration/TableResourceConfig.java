@@ -26,7 +26,7 @@ public class TableResourceConfig {
     }
 
     public String getResourcePath() {
-        return String.join(File.separator, classPath, "test", "resources");
+        return String.join(File.separator, classPath);
     }
 
     public List<String> getTables() {

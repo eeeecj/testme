@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 public class DatasourceConfigComponent implements PersistentStateComponent<DatasourceConfig4Save> {
 
     private DatasourceConfig4Save config;
+
+
     public static DatasourceConfigComponent getInstance() {
         return ServiceManager.getService(DatasourceConfigComponent.class);
     }

@@ -1,10 +1,13 @@
 package com.weirddev.testme.intellij.generator;
 
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.weirddev.testme.intellij.HackedRuntimeInstance;
 import com.weirddev.testme.intellij.configuration.TableResourceConfig;
 import com.weirddev.testme.intellij.sql.SqlExecutor;
 
@@ -16,10 +19,12 @@ import java.util.Map;
 
 public class TableResourceGenerator {
 
+    private static final Logger LOG = Logger.getInstance(HackedRuntimeInstance.class.getName());
+
     public void generation(Project project, TableResourceConfig config) throws Exception {
         List<String> tables = config.getTables();
         for (String table : tables) {
-            createColumnStructure(project, config, table);
+            createTableStructure(project, config, table);
             createColumnStructure(project, config, table);
             createDataStructure(project, config, table);
         }
@@ -59,8 +64,16 @@ public class TableResourceGenerator {
 
 
     public void writeFile(Project project, String packageName, String name, String content) throws IOException {
-        VirtualFile virtualFile = createPackageDir(packageName).createChildData(project, name);
-        virtualFile.setBinaryContent(content.getBytes(StandardCharsets.UTF_8));
+        WriteCommandAction.runWriteCommandAction(project, () -> {
+            VirtualFile virtualFile = null;
+            try {
+                virtualFile = createPackageDir(packageName).createChildData(project, name);
+                virtualFile.setBinaryContent(content.getBytes(StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                LOG.error(e);
+            }
+        });
+
     }
 
     private static VirtualFile createPackageDir(String packageName) {

@@ -43,7 +43,7 @@ public class DatasourceComponent {
     }
 
     public void updateDatasource() {
-        this.close();
+//        this.close();
         try {
             dataSource = createDatasource();
         } catch (Exception ignored) {

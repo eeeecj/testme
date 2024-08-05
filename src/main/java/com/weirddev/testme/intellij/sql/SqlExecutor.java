@@ -56,11 +56,12 @@ public class SqlExecutor {
             return "";
         }
         Map<String, Object> map = result.get(0);
-        return map.get("CREATE_TABLE").toString();
+        return (String) map.get("Create Table");
     }
 
     public static List<String> getColumns(String tableName) throws Exception {
-        String sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? ORDER BY ORDINAL_POSITION";
+        String sql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \"" + tableName
+                + "\" ORDER BY ORDINAL_POSITION";
         List<Map<String, Object>> result = SqlExecutor.executeSqlWithResult(sql);
         if (CollectionUtils.isEmpty(result)) {
             return null;
@@ -69,7 +70,7 @@ public class SqlExecutor {
     }
 
     public static List<Map<String, Object>> getData(String tableName, String size) throws Exception {
-        String sql = "SELECT * FROM " + tableName + " limit " + size ;
+        String sql = "SELECT * FROM " + tableName + " limit " + size;
         return SqlExecutor.executeSqlWithResult(sql);
     }
 }

@@ -2,6 +2,7 @@ package com.weirddev.testme.intellij.ui.settings;
 
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.progress.BackgroundTaskQueue;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -10,11 +11,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.weirddev.testme.intellij.HackedRuntimeInstance;
 import com.weirddev.testme.intellij.configuration.DatasourceConfigComponent;
 import com.weirddev.testme.intellij.configuration.DatasourceConfiguration;
 import com.weirddev.testme.intellij.configuration.TableResourceConfig;
 import com.weirddev.testme.intellij.configuration.TableResourceConfigComponent;
 import com.weirddev.testme.intellij.generator.TableResourceGenerator;
+import com.weirddev.testme.intellij.intention.FileChooserIntention;
 import com.weirddev.testme.intellij.sql.DatasourceComponent;
 import com.weirddev.testme.intellij.sql.SqlExecutor;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +44,7 @@ import java.util.List;
  * @Copyright: 公众号：bugstack虫洞栈 | 博客：https://bugstack.cn - 沉淀、分享、成长，让自己和他人都能有所收获！
  */
 public class TestMeTableStructure implements Configurable, Disposable {
+    private static final Logger LOG = Logger.getInstance(HackedRuntimeInstance.class.getName());
 
     private JPanel main;
     private JTextField classpath;
@@ -54,7 +59,6 @@ public class TestMeTableStructure implements Configurable, Disposable {
     private JPanel namePanel;
     private JButton saveConfiguration;
     private JButton testConnection;
-    private JButton addConfiguration;
     private JButton deleteButton;
     private JButton showTables;
     private JTextField fetchSize;
@@ -73,7 +77,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
 
     private TableResourceGenerator tableResourceGenerator;
 
-    public TestMeTableStructure(Project project,TableResourceGenerator tableResourceGenerator) {
+    public TestMeTableStructure(Project project, TableResourceGenerator tableResourceGenerator) {
         this.project = project;
 
         this.tableResourceGenerator = tableResourceGenerator;
@@ -81,44 +85,14 @@ public class TestMeTableStructure implements Configurable, Disposable {
         backgroundTaskQueue = new BackgroundTaskQueue(null, APPLICATION_NAME);
         namePanel.setLayout(new BorderLayout());
 
-        host.getDocument().addDocumentListener(new DatasourceChangeListener());
-        port.getDocument().addDocumentListener(new DatasourceChangeListener());
-        database.getDocument().addDocumentListener(new DatasourceChangeListener());
-
-
-        saveConfiguration.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
-            @Override
-            public void run(@NotNull ProgressIndicator indicator) {
-                updateDatasourceForPersistent();
-                ApplicationManager.getApplication().invokeLater(() -> testResult.setText("Save success."));
-            }
-        }));
-
-        testConnection.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
-            @Override
-            public void run(@NotNull ProgressIndicator indicator) {
-
-                updateDatasourceForPersistent();
-                String connectionInfo = SqlExecutor.testConnected();
-
-                ApplicationManager.getApplication().invokeLater(() -> testResult.setText(connectionInfo));
-            }
-        }));
-
-        addConfiguration.addActionListener(e -> addDatasource());
-        deleteButton.addActionListener(e -> deleteDatasource());
-
-        this.saveConfiguration.addMouseListener(new MouseCursorAdapter(this.saveConfiguration));
-        this.testConnection.addMouseListener(new MouseCursorAdapter(this.testConnection));
-        this.addConfiguration.addMouseListener(new MouseCursorAdapter(this.addConfiguration));
-        this.deleteButton.addMouseListener(new MouseCursorAdapter(this.deleteButton));
-        this.deleteButton.setEnabled(true);
+        addDatasourceTextAction();
 
         main.registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         this.tableNames = new ArrayList<>();
 
         initData();
+        addActions();
 
         nameComboBox.addActionListener(e -> {
             DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
@@ -186,9 +160,57 @@ public class TestMeTableStructure implements Configurable, Disposable {
         });
     }
 
-    private void initData() {
-        DatasourceConfigComponent datasourceConfigComponent = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
+    private void addDatasourceTextAction() {
+        host.getDocument().addDocumentListener(new DatasourceChangeListener());
+        port.getDocument().addDocumentListener(new DatasourceChangeListener());
+        database.getDocument().addDocumentListener(new DatasourceChangeListener());
+    }
 
+    private void addActions() {
+        this.saveConfiguration.addMouseListener(new MouseCursorAdapter(this.saveConfiguration));
+        this.testConnection.addMouseListener(new MouseCursorAdapter(this.testConnection));
+        this.deleteButton.addMouseListener(new MouseCursorAdapter(this.deleteButton));
+        this.deleteButton.setEnabled(true);
+
+        classpathButton.addActionListener((e) -> {
+            FileChooserIntention component = FileChooserIntention.getInstance(project);
+            VirtualFile baseDir = project.getBaseDir();
+            VirtualFile virtualFile = component.showFolderSelectionDialog("选择PO生成目录", baseDir, baseDir);
+            if (null != virtualFile) {
+                TestMeTableStructure.this.classpath.setText(virtualFile.getPath());
+            }
+        });
+
+        saveConfiguration.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                updateClassPathForPersistent();
+                updateDatasourceForPersistent();
+                ApplicationManager.getApplication().invokeLater(() -> testResult.setText("Save success."));
+            }
+        }));
+
+        testConnection.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+
+                updateDatasourceForPersistent();
+                String connectionInfo = SqlExecutor.testConnected();
+
+                ApplicationManager.getApplication().invokeLater(() -> testResult.setText(connectionInfo));
+            }
+        }));
+
+        deleteButton.addActionListener(e -> deleteDatasource());
+    }
+
+    private void initData() {
+        TableResourceConfigComponent tableResourceConfigComponent = TableResourceConfigComponent.getInstance(project);
+        classpath.setText(tableResourceConfigComponent.getClassPath());
+        fetchSize.setText(tableResourceConfigComponent.getFetchSize());
+        sep.setText(tableResourceConfigComponent.getSep());
+
+        DatasourceConfigComponent datasourceConfigComponent = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
         host.setText(datasourceConfigComponent.getHost());
         port.setText(datasourceConfigComponent.getPort());
         user.setText(datasourceConfigComponent.getUser());
@@ -218,20 +240,17 @@ public class TestMeTableStructure implements Configurable, Disposable {
 
     @Override
     public void apply() {
-        TableResourceConfigComponent tableResourceConfig=ApplicationManager.getApplication().getService(TableResourceConfigComponent.class);
-        TableResourceConfig config=tableResourceConfig.getTableResourceConfig();
-
-        config.setClassPath(this.classpath.getText());
-        config.setTables(this.tableNames);
-        config.setSep(this.sep.getText());
-        config.setFetchSize(this.fetchSize.getText()!=null?this.fetchSize.getText():"10");
+        updateClassPathForPersistent();
+        updateDatasourceForPersistent();
 
         DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
+        TableResourceConfigComponent tableResourceConfig = TableResourceConfigComponent.getInstance(project);
+        TableResourceConfig config = tableResourceConfig.getTableResourceConfig();
 
         try {
             tableResourceGenerator.generation(project, config);
-        }catch (Exception e){
-            testResult.setText(e.getMessage());
+        } catch (Exception e) {
+            LOG.error(e);
         }
     }
 
@@ -269,6 +288,16 @@ public class TestMeTableStructure implements Configurable, Disposable {
     }
 
 
+    private void updateClassPathForPersistent() {
+        TableResourceConfigComponent tableResourceConfig = TableResourceConfigComponent.getInstance(project);
+        TableResourceConfig config = tableResourceConfig.getTableResourceConfig();
+
+        config.setClassPath(this.classpath.getText());
+        config.setTables(this.tableNames);
+        config.setSep(this.sep.getText());
+        config.setFetchSize(this.fetchSize.getText() != null ? this.fetchSize.getText() : "10");
+    }
+
     private void updateDatasourceForPersistent() {
 
         DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
@@ -285,7 +314,6 @@ public class TestMeTableStructure implements Configurable, Disposable {
         component.setCurrent(name);
 
         DatasourceConfiguration configuration = component.getConfig();
-
         if (configuration == null) {
             configuration = new DatasourceConfiguration();
             component.addDatasourceConfiguration(configuration);

@@ -44,7 +44,7 @@
         <applicationService serviceImplementation="com.weirddev.testme.intellij.configuration.TestMeConfigPersistent"/>
         <applicationService
                 serviceImplementation="com.weirddev.testme.intellij.configuration.DatasourceConfigComponent"/>
-        <applicationService
+        <projectService
                 serviceImplementation="com.weirddev.testme.intellij.configuration.TableResourceConfigComponent"/>
         <applicationService serviceImplementation="com.weirddev.testme.intellij.sql.DatasourceComponent"/>
         <applicationService
