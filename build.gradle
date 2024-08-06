@@ -194,7 +194,7 @@ intellij {
     sameSinceUntilBuild = false
     updateSinceUntilBuild = false
     plugins = enabledPlugins
-    localPath = '/home/eeeecj/workspace/java/idea-ic/'
+    localPath = '/home/eeeecj/workspace/code/java/idea/'
 }
 publishPlugin {
     token = System.getenv("ORG_GRADLE_PROJECT_intellijPublishToken")

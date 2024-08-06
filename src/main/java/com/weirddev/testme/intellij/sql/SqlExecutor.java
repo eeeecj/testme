@@ -25,9 +25,8 @@ public class SqlExecutor {
         try (Connection ignored = datasourceComponent.getConnection()) {
             return DATASOURCE_CONNECTED;
         } catch (Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            return String.format("Server can't Connect!\n%s", sw);
+            LOG.error(e);
+            return String.format("Server can't Connect!\n%s", e.getMessage());
         }
     }
 

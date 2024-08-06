@@ -34,9 +34,6 @@
     <extensions defaultExtensionNs="com.intellij">
         <applicationConfigurable parentId="root" displayName="TestMe" id="preferences.TestMe"
                                  instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable"/>
-        <applicationConfigurable parentId="preferences.TestMe" displayName="Datasource"
-                                 id="preferences.TestMe.datasource"
-                                 instance="com.weirddev.testme.intellij.ui.settings.TestMeConfigurable1"/>
 
         <projectConfigurable id="preferences.TestMe.templates" parentId="preferences.TestMe"
                              displayName="TestMe Templates"

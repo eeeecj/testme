@@ -4,8 +4,8 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.progress.BackgroundTaskQueue;
 import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.ComboBox;
@@ -72,7 +72,6 @@ public class TestMeTableStructure implements Configurable, Disposable {
     private final JTextField nameText = new JTextField();
     private final JComboBox<String> nameComboBox = new ComboBox<>();
 
-    private final BackgroundTaskQueue backgroundTaskQueue;
     private static final String APPLICATION_NAME = "TestMeTaskQueue";
 
     private TableResourceGenerator tableResourceGenerator;
@@ -82,7 +81,6 @@ public class TestMeTableStructure implements Configurable, Disposable {
 
         this.tableResourceGenerator = tableResourceGenerator;
 
-        backgroundTaskQueue = new BackgroundTaskQueue(null, APPLICATION_NAME);
         namePanel.setLayout(new BorderLayout());
 
         addDatasourceTextAction();
@@ -109,38 +107,37 @@ public class TestMeTableStructure implements Configurable, Disposable {
 
             DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
             datasourceComponent.updateDatasource();
-
-            backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
-                @Override
-                public void run(@NotNull ProgressIndicator indicator) {
-                    String connectionInfo = SqlExecutor.testConnected();
-                    ApplicationManager.getApplication().invokeLater(() -> testResult.setText(connectionInfo));
-                }
-            });
         });
 
         // 查询数据库表列表
         this.showTables.addActionListener(e -> {
-            try {
-                DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
+            ProgressManager.getInstance().run(new Task.Backgroundable(null,APPLICATION_NAME) {
+                @Override
+                public void run(@NotNull ProgressIndicator progressIndicator) {
+                    try {
+                        DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
 
-                List<String> tableList = datasourceComponent.getAllTableName(this.database.getText());
+                        List<String> tableList = datasourceComponent.getAllTableName();
 
-                String[] title = {"", "表名"};
-                Object[][] data = new Object[tableList.size()][2];
-                for (int i = 0; i < tableList.size(); i++) {
-                    data[i][1] = tableList.get(i);
+                        String[] title = {"", "表名"};
+                        Object[][] data = new Object[tableList.size()][2];
+                        for (int i = 0; i < tableList.size(); i++) {
+                            data[i][1] = tableList.get(i);
+                        }
+
+                        ApplicationManager.getApplication().invokeLater(()->{
+                            table1.setModel(new DefaultTableModel(data, title));
+                            TableColumn tc = table1.getColumnModel().getColumn(0);
+                            tc.setCellEditor(new DefaultCellEditor(new JCheckBox()));
+                            tc.setCellEditor(table1.getDefaultEditor(Boolean.class));
+                            tc.setCellRenderer(table1.getDefaultRenderer(Boolean.class));
+                            tc.setMaxWidth(100);
+                        });
+                    } catch (Exception exception) {
+                        ApplicationManager.getApplication().invokeLater(()->testResult.setText("数据库连接错误,请检查配置"));
+                    }
                 }
-
-                table1.setModel(new DefaultTableModel(data, title));
-                TableColumn tc = table1.getColumnModel().getColumn(0);
-                tc.setCellEditor(new DefaultCellEditor(new JCheckBox()));
-                tc.setCellEditor(table1.getDefaultEditor(Boolean.class));
-                tc.setCellRenderer(table1.getDefaultRenderer(Boolean.class));
-                tc.setMaxWidth(100);
-            } catch (Exception exception) {
-                Messages.showWarningDialog(project, "数据库连接错误,请检查配置.", "Warning");
-            }
+            });
         });
 
         // 给表添加事件
@@ -181,7 +178,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
             }
         });
 
-        saveConfiguration.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
+        saveConfiguration.addActionListener((e) -> ProgressManager.getInstance().run(new Task.Backgroundable(null, APPLICATION_NAME) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 updateClassPathForPersistent();
@@ -190,10 +187,9 @@ public class TestMeTableStructure implements Configurable, Disposable {
             }
         }));
 
-        testConnection.addActionListener((e) -> backgroundTaskQueue.run(new Task.Backgroundable(null, APPLICATION_NAME) {
+        testConnection.addActionListener((e) -> ProgressManager.getInstance().run(new Task.Backgroundable(null, APPLICATION_NAME) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-
                 updateDatasourceForPersistent();
                 String connectionInfo = SqlExecutor.testConnected();
 
@@ -243,7 +239,6 @@ public class TestMeTableStructure implements Configurable, Disposable {
         updateClassPathForPersistent();
         updateDatasourceForPersistent();
 
-        DatasourceComponent datasourceComponent = ApplicationManager.getApplication().getService(DatasourceComponent.class);
         TableResourceConfigComponent tableResourceConfig = TableResourceConfigComponent.getInstance(project);
         TableResourceConfig config = tableResourceConfig.getTableResourceConfig();
 
@@ -251,6 +246,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
             tableResourceGenerator.generation(project, config);
         } catch (Exception e) {
             LOG.error(e);
+            Messages.showWarningDialog(project,"生成数据配置文件错误:\n"+e.getMessage(),"Warning");
         }
     }
 

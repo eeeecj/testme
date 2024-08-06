@@ -26,7 +26,7 @@ public class DatasourceComponent {
         return dataSource.getConnection(3000);
     }
 
-    public List<String> getAllTableName(String database) throws Exception {
+    public List<String> getAllTableName() throws Exception {
         Connection conn = this.getConnection();
         try {
             DatabaseMetaData metaData = conn.getMetaData();
