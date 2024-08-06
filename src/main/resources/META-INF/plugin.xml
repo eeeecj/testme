@@ -70,9 +70,9 @@
                     text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
                 <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
             </action>
-            <action id="testme.action.generators2" class="com.weirddev.testme.intellij.action.TableResourceAction"
-                    text="&amp;TestMe..." description="TestMe Unit test generators" icon="/icons/TestMe.png">
-                <keyboard-shortcut first-keystroke="alt shift Q" keymap="$default"/>
+            <action id="testme.action.datasource.generators" class="com.weirddev.testme.intellij.action.TableResourceAction"
+                    text="&amp;Test Resource" description="TestMe sql resource generators" icon="/icons/resource.svg">
+                <keyboard-shortcut first-keystroke="alt shift W" keymap="$default"/>
             </action>
         </group>
         <!--<group id="testme.group.generators"-->
