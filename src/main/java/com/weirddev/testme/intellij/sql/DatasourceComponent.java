@@ -6,7 +6,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.weirddev.testme.intellij.configuration.DatasourceConfigComponent;
 
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,6 +16,7 @@ public class DatasourceComponent {
     public static final String DATABASE_URL_TEMPLATE = "jdbc:mysql://%s:%s/%s";
 
     private DruidDataSource dataSource;
+    private String database;
 
     public Connection getConnection() throws Exception {
         if (dataSource == null || dataSource.isClosed()) {
@@ -27,10 +27,12 @@ public class DatasourceComponent {
     }
 
     public List<String> getAllTableName() throws Exception {
+
         Connection conn = this.getConnection();
+        String sql_template = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='%s'";
+        String sql = String.format(sql_template, database);
         try {
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+            ResultSet rs = conn.createStatement().executeQuery(sql);
             List<String> ls = new ArrayList<>();
             while (rs.next()) {
                 String s = rs.getString("TABLE_NAME");
@@ -43,7 +45,6 @@ public class DatasourceComponent {
     }
 
     public void updateDatasource() {
-//        this.close();
         try {
             dataSource = createDatasource();
         } catch (Exception ignored) {
@@ -78,6 +79,7 @@ public class DatasourceComponent {
 
         DatasourceConfigComponent component = ApplicationManager.getApplication().getService(DatasourceConfigComponent.class);
 
+        database = component.getDatabase();
         Properties properties = new Properties();
 
         String url = String.format(DATABASE_URL_TEMPLATE, component.getHost(), component.getPort(), component.getDatabase());

@@ -20,12 +20,9 @@ public class TestMeConfigurable implements SearchableConfigurable {
     private final TestMeConfigPersistent testMeConfigPersistent;
     private TestMeSettingsForm testMeSettingsForm;
 
-    private TestMeDatasourceSettingForm testMeDatasourceSettingForm;
-    private DatasourceConfigComponent datasourceConfigComponent;
 
     public TestMeConfigurable() {
         testMeConfigPersistent = TestMeConfigPersistent.getInstance();
-        datasourceConfigComponent = DatasourceConfigComponent.getInstance();
     }
 
     @NotNull
@@ -50,7 +47,6 @@ public class TestMeConfigurable implements SearchableConfigurable {
     @Override
     public JComponent createComponent() {
         testMeSettingsForm = new TestMeSettingsForm();
-        testMeDatasourceSettingForm=new TestMeDatasourceSettingForm();
         return testMeSettingsForm.getRootPanel();
     }
 
@@ -73,6 +69,5 @@ public class TestMeConfigurable implements SearchableConfigurable {
     public void disposeUIResources() {
         testMeSettingsForm.dispose();
         testMeSettingsForm = null;
-        testMeDatasourceSettingForm.dispose();
     }
 }

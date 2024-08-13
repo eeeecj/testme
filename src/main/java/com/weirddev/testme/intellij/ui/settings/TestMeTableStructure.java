@@ -64,6 +64,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
     private JTextField fetchSize;
     private JTextField sep;
     private JButton classpathButton;
+    private JButton newButton;
 
     private Project project;
 
@@ -111,7 +112,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
 
         // 查询数据库表列表
         this.showTables.addActionListener(e -> {
-            ProgressManager.getInstance().run(new Task.Backgroundable(null,APPLICATION_NAME) {
+            ProgressManager.getInstance().run(new Task.Backgroundable(null, APPLICATION_NAME) {
                 @Override
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     try {
@@ -125,8 +126,11 @@ public class TestMeTableStructure implements Configurable, Disposable {
                             data[i][1] = tableList.get(i);
                         }
 
-                        ApplicationManager.getApplication().invokeLater(()->{
+                        ApplicationManager.getApplication().invokeLater(() -> {
                             table1.setModel(new DefaultTableModel(data, title));
+                            if (data.length > 0) {
+                                table1.setPreferredSize(new Dimension(-1, 30 * data.length));
+                            }
                             TableColumn tc = table1.getColumnModel().getColumn(0);
                             tc.setCellEditor(new DefaultCellEditor(new JCheckBox()));
                             tc.setCellEditor(table1.getDefaultEditor(Boolean.class));
@@ -134,7 +138,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
                             tc.setMaxWidth(100);
                         });
                     } catch (Exception exception) {
-                        ApplicationManager.getApplication().invokeLater(()->testResult.setText("数据库连接错误,请检查配置"));
+                        ApplicationManager.getApplication().invokeLater(() -> testResult.setText("数据库连接错误,请检查配置"));
                     }
                 }
             });
@@ -167,6 +171,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
         this.saveConfiguration.addMouseListener(new MouseCursorAdapter(this.saveConfiguration));
         this.testConnection.addMouseListener(new MouseCursorAdapter(this.testConnection));
         this.deleteButton.addMouseListener(new MouseCursorAdapter(this.deleteButton));
+        this.newButton.addMouseListener(new MouseCursorAdapter(this.newButton));
         this.deleteButton.setEnabled(true);
 
         classpathButton.addActionListener((e) -> {
@@ -177,6 +182,8 @@ public class TestMeTableStructure implements Configurable, Disposable {
                 TestMeTableStructure.this.classpath.setText(virtualFile.getPath());
             }
         });
+
+        newButton.addActionListener((e) -> addDatasource());
 
         saveConfiguration.addActionListener((e) -> ProgressManager.getInstance().run(new Task.Backgroundable(null, APPLICATION_NAME) {
             @Override
@@ -246,7 +253,7 @@ public class TestMeTableStructure implements Configurable, Disposable {
             tableResourceGenerator.generation(project, config);
         } catch (Exception e) {
             LOG.error(e);
-            Messages.showWarningDialog(project,"生成数据配置文件错误:\n"+e.getMessage(),"Warning");
+            Messages.showWarningDialog(project, "生成数据配置文件错误:\n" + e.getMessage(), "Warning");
         }
     }
 
@@ -315,7 +322,10 @@ public class TestMeTableStructure implements Configurable, Disposable {
             component.addDatasourceConfiguration(configuration);
         }
 
-        configuration.name(name).host(host.getText()).port(port.getText()).user(user.getText()).password(String.valueOf(password.getPassword())).database(database.getText());
+        configuration.name(name).host(host.getText()).port(port.getText())
+                .user(user.getText())
+                .password(String.valueOf(password.getPassword()))
+                .database(database.getText());
 
         datasourceComponent.updateDatasource();
 
