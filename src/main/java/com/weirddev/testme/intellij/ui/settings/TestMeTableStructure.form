@@ -103,7 +103,7 @@
             <properties>
               <intercellSpacing width="3" height="3"/>
               <maximumSize width="2147483647" height="2147483647"/>
-              <preferredScrollableViewportSize width="450" height="150"/>
+              <preferredScrollableViewportSize width="450" height="100"/>
               <preferredSize width="-1" height="-1"/>
               <rowHeight value="30"/>
             </properties>
@@ -139,8 +139,8 @@
               <component id="2cf0c" class="javax.swing.JTextField" binding="port">
                 <constraints>
                   <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <minimum-size width="100" height="-1"/>
-                    <preferred-size width="150" height="-1"/>
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="100" height="-1"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -187,8 +187,8 @@
                 <margin top="0" left="0" bottom="0" right="0"/>
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                    <minimum-size width="150" height="-1"/>
-                    <preferred-size width="250" height="-1"/>
+                    <minimum-size width="80" height="-1"/>
+                    <preferred-size width="160" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
@@ -200,8 +200,8 @@
               <component id="193a2" class="javax.swing.JTextField" binding="host">
                 <constraints>
                   <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <minimum-size width="150" height="-1"/>
-                    <preferred-size width="250" height="-1"/>
+                    <minimum-size width="80" height="-1"/>
+                    <preferred-size width="160" height="-1"/>
                   </grid>
                 </constraints>
                 <properties>
@@ -227,8 +227,8 @@
               <component id="6f080" class="javax.swing.JTextField" binding="database">
                 <constraints>
                   <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <minimum-size width="60" height="-1"/>
-                    <preferred-size width="150" height="-1"/>
+                    <minimum-size width="40" height="-1"/>
+                    <preferred-size width="100" height="-1"/>
                   </grid>
                 </constraints>
                 <properties/>
@@ -265,7 +265,7 @@
                   <lineWrap value="true"/>
                   <margin top="0" left="0" bottom="0" right="0"/>
                   <maximumSize width="-1" height="-1"/>
-                  <minimumSize width="100" height="23"/>
+                  <minimumSize width="-1" height="23"/>
                   <opaque value="false"/>
                   <preferredSize width="60" height="160"/>
                   <requestFocusEnabled value="true"/>
