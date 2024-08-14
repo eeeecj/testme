@@ -51,12 +51,16 @@ public class TableResourceGenerator {
     public void createDataStructure(Project project, TableResourceConfig config, String table) throws Exception {
         List<Map<String, Object>> data = SqlExecutor.getData(table, config.getFetchSize());
         List<String> columns = SqlExecutor.getColumns(table);
+        if (null == columns) {
+            throw new Exception("The Table has no columns");
+        }
         StringBuilder sb = new StringBuilder();
-        data.stream().forEach(p -> {
+        data.forEach(p -> {
             columns.forEach(c -> {
                 sb.append(p.get(c));
                 sb.append(config.getSep());
             });
+            sb.delete(sb.lastIndexOf(config.getSep()), sb.length());
             sb.append("\n");
         });
         writeFile(project, config.getTablePath(table), table + ".dat", sb.toString());
