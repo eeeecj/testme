@@ -29,7 +29,7 @@ public class DatasourceComponent {
     public List<String> getAllTableName() throws Exception {
 
         Connection conn = this.getConnection();
-        String sql_template = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='%s'";
+        String sql_template = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='%s' ORDER BY TABLE_NAME";
         String sql = String.format(sql_template, database);
         try {
             ResultSet rs = conn.createStatement().executeQuery(sql);
